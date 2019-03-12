@@ -1,7 +1,7 @@
 import XCTest
 
-import swift_eitherTests
+import EitherTests
 
 var tests = [XCTestCaseEntry]()
-tests += swift_eitherTests.allTests()
+tests += EitherTests.allTests()
 XCTMain(tests)
