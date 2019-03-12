@@ -153,3 +153,58 @@ extension Either where Right: Error {
   }
 }
 #endif
+
+extension Optional {
+  public func select<Left, Right>(
+    _ perform: ((Left) -> Right)?
+    ) -> Right?
+    where Wrapped == Either<Left, Right> {
+      return self.flatMap { e in
+        e.either(
+          ifLeft: { a in perform.map { f in f(a) } },
+          ifRight: { b in .some(b) }
+        )
+      }
+  }
+}
+
+extension Sequence {
+  public func lefts<Left, Right>() -> [Left] where Element == Either<Left, Right> {
+    return self.compactMap { $0.left }
+  }
+
+  public func rights<Left, Right>() -> [Right] where Element == Either<Left, Right> {
+    return self.compactMap { $0.right }
+  }
+
+  public func partitionMap<Left, Right>(_ transform: (Element) -> Either<Left, Right>)
+    -> ([Left], [Right]) {
+      return self.reduce(into: ([], [])) { result, element in
+        transform(element).do(
+          ifLeft: { result.0.append($0) },
+          ifRight: { result.1.append($0) }
+        )
+      }
+  }
+
+  public func partition(_ predicate: (Element) -> Bool) -> (pass: [Element], fail: [Element]) {
+    return self.partitionMap { predicate($0) ? .left($0) : .right($0) }
+  }
+
+  public func partitioned<Left, Right>() -> ([Left], [Right])
+    where Element == Either<Left, Right> {
+      return self.partitionMap { $0 }
+  }
+
+  public func select<ConditionalEffects, Left, Right>(_ perform: ConditionalEffects) -> [Right]
+    where Element == Either<Left, Right>,
+    ConditionalEffects: Sequence,
+    ConditionalEffects.Element == (Left) -> Right {
+      return self.flatMap { either in
+        either.either(
+          ifLeft: { left in perform.map { f in f(left) } },
+          ifRight: { right in [right] }
+        )
+      }
+  }
+}
