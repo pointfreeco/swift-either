@@ -9,7 +9,18 @@ public typealias E9<A, B, C, D, E, F, G, H, Z> = Either<A, E8<B, C, D, E, F, G, 
 public typealias E10<A, B, C, D, E, F, G, H, I, Z> = Either<A, E9<B, C, D, E, F, G, H, I, Z>>
 public typealias E11<A, B, C, D, E, F, G, H, I, J, Z> = Either<A, E10<B, C, D, E, F, G, H, I, J, Z>>
 
+/// A terminal type for right-nested eithers. Used instead of `Never` for codability.
 public enum Done {}
+
+extension Done: Equatable {}
+
+extension Done: Comparable {
+  public static func < (lhs: Done, rhs: Done) -> Bool {
+    switch (lhs, rhs) {}
+  }
+}
+
+extension Done: Hashable {}
 
 extension Done: Decodable {
   public init(from decoder: Decoder) throws {

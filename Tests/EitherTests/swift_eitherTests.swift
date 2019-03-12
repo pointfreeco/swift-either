@@ -1,15 +1,13 @@
 import XCTest
-@testable import swift_either
+import Either
 
 final class swift_eitherTests: XCTestCase {
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        XCTAssertEqual(swift_either().text, "Hello, World!")
-    }
+  func testExample() {
+    let e = Either<Int, Bool>.in1(1)
+    e.at1 { $0 + 1 }
+  }
 
-    static var allTests = [
-        ("testExample", testExample),
-    ]
+  static var allTests = [
+    ("testExample", testExample),
+  ]
 }

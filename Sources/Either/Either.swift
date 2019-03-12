@@ -2,10 +2,6 @@ public enum Either<Left, Right> {
   case left(Left)
   case right(Right)
 
-  public init(_ optional: Right?, default value: @autoclosure () -> Left) {
-    self = optional.map(Either.right) ?? Either.left(value())
-  }
-
   public var left: Left? {
     return self.either(ifLeft: Optional.some, ifRight: { _ in Optional.none })
   }
