@@ -69,10 +69,6 @@ public enum Either<Left, Right> {
   }
 }
 
-public struct Errors: Error {
-  let errors: [Error]
-}
-
 extension Either: Equatable where Left: Equatable, Right: Equatable {
   public static func == (lhs: Either, rhs: Either) -> Bool {
     switch (lhs, rhs) {
@@ -108,6 +104,10 @@ extension Either: Hashable where Left: Hashable, Right: Hashable {
       ifRight: { hasher.combine($0) }
     )
   }
+}
+
+public struct Errors: Error {
+  let errors: [Error]
 }
 
 extension Either: Decodable where Left: Decodable, Right: Decodable {
