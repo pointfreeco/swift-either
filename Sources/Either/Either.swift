@@ -125,11 +125,19 @@ extension Either: Comparable where Left: Comparable, Right: Comparable {
   }
 }
 
+private enum HashableTag: Hashable { case left, right }
+
 extension Either: Hashable where Left: Hashable, Right: Hashable {
   public func hash(into hasher: inout Hasher) {
     self.do(
-      ifLeft: { hasher.combine($0) },
-      ifRight: { hasher.combine($0) }
+      ifLeft: {
+        hasher.combine(HashableTag.left)
+        hasher.combine($0)
+    },
+      ifRight: {
+        hasher.combine(HashableTag.right)
+        hasher.combine($0)
+    }
     )
   }
 }
