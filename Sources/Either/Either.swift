@@ -67,6 +67,34 @@ public enum Either<Left, Right> {
     ) rethrows -> Either<Left, NewRight> {
     return try self.either(ifLeft: { .left($0) }, ifRight: transform)
   }
+
+  public static func zipLeft<LeftLeft, RightLeft>(
+    _ lhs: Either<LeftLeft, Right>, rhs: Either<RightLeft, Right>
+    ) -> Either
+    where Left == (LeftLeft, RightLeft) {
+      switch (lhs, rhs) {
+      case let (.left(left), .left(otherLeft)):
+        return .left((left, otherLeft))
+      case let (.right(right), _):
+        return .right(right)
+      case let (_, .right(right)):
+        return .right(right)
+      }
+  }
+
+  public static func zipRight<LeftRight, RightRight>(
+    _ lhs: Either<Left, LeftRight>, rhs: Either<Left, RightRight>
+    ) -> Either
+    where Right == (LeftRight, RightRight) {
+      switch (lhs, rhs) {
+      case let (.right(right), .right(otherRight)):
+        return .right((right, otherRight))
+      case let (.left(left), _):
+        return .left(left)
+      case let (_, .left(left)):
+        return .left(left)
+      }
+  }
 }
 
 extension Either: Equatable where Left: Equatable, Right: Equatable {
@@ -106,7 +134,7 @@ extension Either: Hashable where Left: Hashable, Right: Hashable {
   }
 }
 
-public struct Errors: Error {
+public struct DecodingErrors: Error {
   let errors: [Error]
 }
 
@@ -123,7 +151,7 @@ extension Either: Decodable where Left: Decodable, Right: Decodable {
           .init(
             codingPath: decoder.codingPath,
             debugDescription: "Could not decode \(Left.self) or \(Right.self)",
-            underlyingError: Errors(errors: [leftError, rightError])
+            underlyingError: DecodingErrors(errors: [leftError, rightError])
           )
         )
       }
